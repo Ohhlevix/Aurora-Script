@@ -4448,7 +4448,7 @@ for attempt = 1, maxRetries do
                 end
                 table.sort(itemNames)
 
-                local dropdown = parentSection:Dropdown("AutoUseDropdown_" .. moduleName, {
+                local dropdown =         local dropdown = parentSection:Dropdown("AutoUseDropdown_" .. moduleName, {
                     Title = "Select " .. moduleConfig.displayName,
                     Values = itemNames,
                     Multi = true, Searchable = true, Default = {}
@@ -5094,11 +5094,9 @@ for attempt = 1, maxRetries do
         local webhookEnabled = false
         local userid = LocalPlayer.UserId
         local username = LocalPlayer.Name
-        local HttpService = game:GetService("HttpService")
-        local MarketplaceService = game:GetService("MarketplaceService")
 
         local gameName = "Unknown Game"
-        pcall(function() gameName = MarketplaceService:GetProductInfo(game.PlaceId).Name end)
+        pcall(function() gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name end)
 
         local thumbCache = {}
         local webhookQueue = {}
