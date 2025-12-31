@@ -1,22 +1,15 @@
-local scripts = {
-    [74260430392611] = "loadstring(game:HttpGet("https://raw.githubusercontent.com/Ohhlevix/Aurora-Script/main/RCU", true))()
-    ",
-    [142823291] = "https://meuscripts.com/mm2.lua",
-    [123456789] = "https://meuscripts.com/pet-sim.lua",
+local Games = {
+  [994732206] = "https://raw.githubusercontent.com/AhmadV99/Script-Games/main/Blox%20Fruit.lua", -- Blox Fruit
+  [1268927906] = "https://raw.githubusercontent.com/AhmadV99/Script-Games/main/Muscle%20Legends.lua", -- Muscle Legends
+  [3808081382] = "https://raw.githubusercontent.com/AhmadV99/Script-Games/main/The%20Strongest%20Battleground.lua",  -- The Strongest Battlegrounds
+  [6401952734] = "https://raw.githubusercontent.com/AhmadV99/Script-Games/main/Pet%20GO.lua", -- Pet GO
+  [5750914919] = "https://raw.githubusercontent.com/AhmadV99/Script-Games/main/Fisch.lua", -- Fisch
+  [7436755782] = "https://raw.githubusercontent.com/AhmadV99/Script-Games/refs/heads/main/Grow%20a%20Garden.lua", -- Grow a Garden
+  [7326934954] = "https://raw.githubusercontent.com/AhmadV99/Script-Games/refs/heads/main/99%20Nights%20in%20the%20Forest.lua", -- 99 Nights in the Forest
+  [6701277882] = "https://raw.githubusercontent.com/AhmadV99/Script-Games/refs/heads/main/Fish%20It.lua", -- Fish It
+  [8316902627] = "https://raw.githubusercontent.com/AhmadV99/Script-Games/refs/heads/main/Plant%20Vs%20Brainrot.lua", -- Plant Vs Brainrot
+  [7671049560] = "https://raw.githubusercontent.com/AhmadV99/Script-Games/refs/heads/main/The%20Forge.lua", -- The Forge
+  [74260430392611] = "loadstring(game:HttpGet("https://raw.githubusercontent.com/Ohhlevix/Aurora-Script/main/RCU", true))()", -- RCU
 }
 
-local placeId = game.PlaceId
-
-local url = scripts[placeId]
-if not url then return end
-
-local ok, res = pcall(function()
-    return game:HttpGet(url)
-end)
-
-if not ok then return end
-
-local fn, loadErr = loadstring(res)
-if not fn then return end
-
-fn()
+return Games
