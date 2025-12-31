@@ -1,0 +1,22 @@
+local scripts = {
+    [74260430392611] = "loadstring(game:HttpGet("https://raw.githubusercontent.com/Ohhlevix/Aurora-Script/main/RCU", true))()
+    ",
+    [142823291] = "https://meuscripts.com/mm2.lua",
+    [123456789] = "https://meuscripts.com/pet-sim.lua",
+}
+
+local placeId = game.PlaceId
+
+local url = scripts[placeId]
+if not url then return end
+
+local ok, res = pcall(function()
+    return game:HttpGet(url)
+end)
+
+if not ok then return end
+
+local fn, loadErr = loadstring(res)
+if not fn then return end
+
+fn()
