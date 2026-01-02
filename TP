@@ -1,0 +1,489 @@
+-- Tapping Simulator Script - Aurora Theme
+-- By Duckie - 2026
+
+local Library = loadstring(game:HttpGetAsync("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/latest/download/Fluent.luau"))()
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
+
+local autoTapEnabled = false
+local autoRebirthEnabled = false
+local autoEggEnabled = false
+local autoUpgradeEnabled = false
+local autoClaimDailyEnabled = false
+local selectedEgg = "Basic Egg"
+local selectedWorld = "Flower World"
+
+local function getRemoteFolder()
+    return ReplicatedStorage:FindFirstChild("73bd9f38-0e90-4df4-bdd9-dfc8d55ec1e1")
+end
+
+local function getEvent(index)
+    local folder = getRemoteFolder()
+    if folder and folder:FindFirstChild("Events") then
+        local events = folder.Events:GetChildren()
+        return events[index]
+    end
+    return nil
+end
+
+local Window = Library:Window({
+    Title = "🌌 Tapping Simulator",
+    SubTitle = "Aurora Hub - By Duckie",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Resize = false,
+    Acrylic = true,
+    Theme = "Amethyst",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+local Tabs = {
+    Farm = Window:AddTab({ Title = "⚡ Auto Farm", Icon = "zap" }),
+    Eggs = Window:AddTab({ Title = "🥚 Eggs & Pets", Icon = "egg" }),
+    Upgrades = Window:AddTab({ Title = "⬆️ Upgrades", Icon = "trending-up" }),
+    Worlds = Window:AddTab({ Title = "🌍 Worlds", Icon = "globe" }),
+    Misc = Window:AddTab({ Title = "⚙️ Misc", Icon = "settings" })
+}
+
+local FarmSection = Tabs.Farm:AddSection("Main Farming")
+
+FarmSection:Toggle("AutoTap", {
+    Title = "Auto Tap",
+    Description = "Automatically clicks for you at max speed",
+    Default = false,
+    Callback = function(Value)
+        autoTapEnabled = Value
+        if Value then
+            task.spawn(function()
+                while autoTapEnabled do
+                    local success = pcall(function()
+                        local event = getEvent(19)
+                        if event then
+                            event:FireServer(true, nil, false)
+                        end
+                    end)
+                    task.wait(0.00001)
+                end
+            end)
+        end
+    end
+})
+
+FarmSection:Toggle("AutoRebirth", {
+    Title = "Auto Rebirth",
+    Description = "Automatically rebirths when possible",
+    Default = false,
+    Callback = function(Value)
+        autoRebirthEnabled = Value
+        if Value then
+            task.spawn(function()
+                while autoRebirthEnabled do
+                    pcall(function()
+                        local event = getEvent(1)
+                        if event then
+                            event:FireServer()
+                        end
+                    end)
+                    task.wait(1)
+                end
+            end)
+        end
+    end
+})
+
+local StatsSection = Tabs.Farm:AddSection("Stats Display")
+
+local clicksLabel = StatsSection:AddParagraph({
+    Title = "Clicks",
+    Content = "Loading..."
+})
+
+local rebirthsLabel = StatsSection:AddParagraph({
+    Title = "Rebirths",
+    Content = "Loading..."
+})
+
+task.spawn(function()
+    while task.wait(1) do
+        pcall(function()
+            local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
+            if playerGui then
+                local mainUI = playerGui:FindFirstChild("Main")
+                if mainUI then
+                    local clicksFrame = mainUI:FindFirstChild("Clicks")
+                    local rebirthsFrame = mainUI:FindFirstChild("Rebirths")
+
+                    if clicksFrame then
+                        local text = clicksFrame:FindFirstChildOfClass("TextLabel")
+                        if text then
+                            clicksLabel:SetDesc(text.Text or "0")
+                        end
+                    end
+
+                    if rebirthsFrame then
+                        local text = rebirthsFrame:FindFirstChildOfClass("TextLabel")
+                        if text then
+                            rebirthsLabel:SetDesc(text.Text or "0")
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+local EggsSection = Tabs.Eggs:AddSection("Auto Hatch Eggs")
+
+local eggOptions = {
+    "Basic Egg",
+    "Flower Egg",
+    "Beach Egg",
+    "Desert Egg",
+    "Space Egg",
+    "Candy Egg",
+    "Lava Egg",
+    "Snow Egg",
+    "Fantasy Egg",
+    "Void Egg",
+    "Alien Egg",
+    "Galaxy Egg",
+    "Heaven Egg"
+}
+
+EggsSection:Dropdown("SelectEgg", {
+    Title = "Select Egg",
+    Values = eggOptions,
+    Multi = false,
+    Default = 1,
+    Callback = function(Value)
+        selectedEgg = Value
+    end
+})
+
+EggsSection:Toggle("AutoHatchEgg", {
+    Title = "Auto Hatch Eggs",
+    Description = "Automatically hatches selected egg (single)",
+    Default = false,
+    Callback = function(Value)
+        autoEggEnabled = Value
+        if Value then
+            task.spawn(function()
+                while autoEggEnabled do
+                    pcall(function()
+                        local event = getEvent(10)
+                        if event then
+                            event:FireServer(selectedEgg, 1)
+                        end
+                    end)
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end
+})
+
+local PetSection = Tabs.Eggs:AddSection("Pet Management")
+
+PetSection:Button({
+    Title = "Equip Best Pets",
+    Description = "Equips your strongest pets automatically",
+    Callback = function()
+        pcall(function()
+            local event = getEvent(12)
+            if event then
+                event:FireServer("EquipBest")
+            end
+        end)
+    end
+})
+
+PetSection:Button({
+    Title = "Craft All Pets",
+    Description = "Combines all pets of same tier",
+    Callback = function()
+        pcall(function()
+            local event = getEvent(15)
+            if event then
+                event:FireServer("CraftAll")
+            end
+        end)
+    end
+})
+
+PetSection:Button({
+    Title = "Delete Lowest Pets",
+    Description = "Removes weakest pets to free space",
+    Callback = function()
+        pcall(function()
+            local event = getEvent(16)
+            if event then
+                event:FireServer("DeleteLowest", 10)
+            end
+        end)
+    end
+})
+
+local UpgradesSection = Tabs.Upgrades:AddSection("Auto Buy Upgrades")
+
+local upgradeTypes = {
+    "Tap Multiplier",
+    "Coin Multiplier",
+    "Lucky Multiplier",
+    "Pet Storage",
+    "Auto Clicker Speed",
+    "Rebirth Requirement"
+}
+
+local selectedUpgrades = {}
+
+UpgradesSection:Dropdown("SelectUpgrades", {
+    Title = "Select Upgrades",
+    Values = upgradeTypes,
+    Multi = true,
+    Default = {},
+    Callback = function(Value)
+        selectedUpgrades = Value
+    end
+})
+
+UpgradesSection:Toggle("AutoBuyUpgrades", {
+    Title = "Auto Buy Selected Upgrades",
+    Description = "Automatically purchases selected upgrades",
+    Default = false,
+    Callback = function(Value)
+        autoUpgradeEnabled = Value
+        if Value then
+            task.spawn(function()
+                while autoUpgradeEnabled do
+                    if next(selectedUpgrades) then
+                        for upgradeName, isSelected in pairs(selectedUpgrades) do
+                            if isSelected then
+                                pcall(function()
+                                    local event = getEvent(5)
+                                    if event then
+                                        event:FireServer(upgradeName)
+                                    end
+                                end)
+                                task.wait(0.3)
+                            end
+                        end
+                    end
+                    task.wait(2)
+                end
+            end)
+        end
+    end
+})
+
+UpgradesSection:Button({
+    Title = "Max All Upgrades",
+    Description = "Attempts to max all available upgrades",
+    Callback = function()
+        task.spawn(function()
+            for _, upgrade in ipairs(upgradeTypes) do
+                for i = 1, 50 do
+                    pcall(function()
+                        local event = getEvent(5)
+                        if event then
+                            event:FireServer(upgrade)
+                        end
+                    end)
+                    task.wait(0.1)
+                end
+            end
+        end)
+    end
+})
+
+local WorldsSection = Tabs.Worlds:AddSection("World Management")
+
+local worldOptions = {
+    "Flower World",
+    "Beach World",
+    "Desert World",
+    "Space World",
+    "Candy World",
+    "Lava World",
+    "Snow World",
+    "Fantasy World",
+    "Void World",
+    "Alien World",
+    "Galaxy World",
+    "Heaven World"
+}
+
+WorldsSection:Dropdown("SelectWorld", {
+    Title = "Select World to Unlock",
+    Values = worldOptions,
+    Multi = false,
+    Default = 1,
+    Callback = function(Value)
+        selectedWorld = Value
+    end
+})
+
+WorldsSection:Button({
+    Title = "Unlock Selected World",
+    Description = "Attempts to unlock the selected world",
+    Callback = function()
+        pcall(function()
+            local event = getEvent(3)
+            if event then
+                event:FireServer(selectedWorld)
+            end
+        end)
+    end
+})
+
+WorldsSection:Button({
+    Title = "Unlock All Worlds",
+    Description = "Attempts to unlock all available worlds",
+    Callback = function()
+        task.spawn(function()
+            for _, world in ipairs(worldOptions) do
+                pcall(function()
+                    local event = getEvent(3)
+                    if event then
+                        event:FireServer(world)
+                    end
+                end)
+                task.wait(0.5)
+            end
+        end)
+    end
+})
+
+local CodesSection = Tabs.Misc:AddSection("Redeem Codes")
+
+local workingCodes = {
+    "90M", "85M", "80M", "75M", "70M", "65M", "60M", "55M", "50M", "45M", "40M", "35M", "30M",
+    "VOID", "ALIEN", "GALAXY", "HEAVEN", "MAGMA", "FANTASY", "SPACE", "SPOOKY",
+    "UPD24", "UPD23", "UPD22", "UPD21", "UPD20", "UPD19", "UPD18", "UPD17", "UPD16", "UPD15",
+    "RELEASE", "TESTING", "BETA", "UPDATE2", "UPDATE3", "UPDATE4", "UPDATE5",
+    "SECRETFREEPETCODE", "FREEPETCODE2", "FREEPETCODE123", "SECRETCODE",
+    "LIKES100K", "LIKES150K", "LIKES200K", "LIKES250K"
+}
+
+CodesSection:Button({
+    Title = "Redeem All Codes",
+    Description = "Redeems all " .. #workingCodes .. " codes",
+    Callback = function()
+        task.spawn(function()
+            local redeemed = 0
+            for _, code in ipairs(workingCodes) do
+                local success = pcall(function()
+                    local event = getEvent(8)
+                    if event then
+                        event:FireServer(code)
+                        redeemed = redeemed + 1
+                    end
+                end)
+                task.wait(0.3)
+            end
+            Library:Notify({
+                Title = "Codes Redeemed",
+                Content = "Successfully redeemed " .. redeemed .. " codes!",
+                Duration = 5
+            })
+        end)
+    end
+})
+
+local RewardsSection = Tabs.Misc:AddSection("Auto Claim Rewards")
+
+RewardsSection:Toggle("AutoClaimDaily", {
+    Title = "Auto Claim Daily Rewards",
+    Description = "Automatically claims daily rewards every 60 seconds",
+    Default = false,
+    Callback = function(Value)
+        autoClaimDailyEnabled = Value
+        if Value then
+            task.spawn(function()
+                while autoClaimDailyEnabled do
+                    pcall(function()
+                        local event = getEvent(20)
+                        if event then
+                            event:FireServer()
+                        end
+                    end)
+                    task.wait(60)
+                end
+            end)
+        end
+    end
+})
+
+RewardsSection:Button({
+    Title = "Claim All Achievements",
+    Description = "Claims all available achievement rewards",
+    Callback = function()
+        task.spawn(function()
+            for i = 1, 100 do
+                pcall(function()
+                    local event = getEvent(21)
+                    if event then
+                        event:FireServer(i)
+                    end
+                end)
+                task.wait(0.2)
+            end
+        end)
+    end
+})
+
+local UtilitySection = Tabs.Misc:AddSection("Utilities")
+
+UtilitySection:Toggle("AntiAFK", {
+    Title = "Anti AFK",
+    Description = "Prevents you from being kicked for inactivity",
+    Default = true,
+    Callback = function(Value)
+        if Value then
+            local VirtualUser = game:GetService("VirtualUser")
+            game:GetService("Players").LocalPlayer.Idled:Connect(function()
+                VirtualUser:CaptureController()
+                VirtualUser:ClickButton2(Vector2.new())
+            end)
+        end
+    end
+})
+
+UtilitySection:Button({
+    Title = "Rejoin Server",
+    Description = "Rejoins current server",
+    Callback = function()
+        game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+    end
+})
+
+UtilitySection:Button({
+    Title = "Server Hop",
+    Description = "Joins a different server",
+    Callback = function()
+        local TeleportService = game:GetService("TeleportService")
+        local HttpService = game:GetService("HttpService")
+
+        local servers = {}
+        local req = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
+
+        for _, server in ipairs(req.data) do
+            if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                table.insert(servers, server)
+            end
+        end
+
+        if #servers > 0 then
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, servers[math.random(1, #servers)].id, LocalPlayer)
+        end
+    end
+})
+
+Window:SelectTab(1)
+
+Library:Notify({
+    Title = "Aurora Hub Loaded",
+    Content = "Tapping Simulator script loaded successfully!",
+    Duration = 5
+})
